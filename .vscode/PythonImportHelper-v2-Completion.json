@@ -1,5 +1,47 @@
 [
     {
+        "label": "sqlite3",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sqlite3",
+        "description": "sqlite3",
+        "detail": "sqlite3",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "datetime",
+        "description": "datetime",
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "date",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "timedelta",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
         "label": "pandas",
         "kind": 6,
         "isExtraImport": true,
@@ -9,11 +51,12 @@
         "documentation": {}
     },
     {
-        "label": "datetime",
-        "importPath": "datetime",
-        "description": "datetime",
+        "label": "MetaTrader5",
+        "kind": 6,
         "isExtraImport": true,
-        "detail": "datetime",
+        "importPath": "MetaTrader5",
+        "description": "MetaTrader5",
+        "detail": "MetaTrader5",
         "documentation": {}
     },
     {
@@ -33,56 +76,128 @@
         "documentation": {}
     },
     {
-        "label": "evaluate",
+        "label": "init_db",
+        "kind": 2,
+        "importPath": "database.models",
+        "description": "database.models",
+        "peekOfCode": "def init_db():\n    conn = sqlite3.connect(DB_FILE)\n    cursor = conn.cursor()\n    cursor.execute('''\n        CREATE TABLE IF NOT EXISTS daily_scores (\n            date TEXT PRIMARY KEY,\n            risk_discipline REAL,\n            edge_consistency REAL,\n            execution_discipline REAL,\n            stability REAL,",
+        "detail": "database.models",
+        "documentation": {}
+    },
+    {
+        "label": "save_daily_scores",
+        "kind": 2,
+        "importPath": "database.models",
+        "description": "database.models",
+        "peekOfCode": "def save_daily_scores(scores):\n    today = date.today().isoformat()\n    conn = sqlite3.connect(DB_FILE)\n    cursor = conn.cursor()\n    cursor.execute('''\n        INSERT OR REPLACE INTO daily_scores\n        (date, risk_discipline, edge_consistency, execution_discipline, stability, psychology)\n        VALUES (?, ?, ?, ?, ?, ?)\n    ''', (today, scores['risk_discipline'], scores['edge_consistency'],\n          scores['execution_discipline'], scores['stability'], scores['psychology']))",
+        "detail": "database.models",
+        "documentation": {}
+    },
+    {
+        "label": "DB_FILE",
+        "kind": 5,
+        "importPath": "database.models",
+        "description": "database.models",
+        "peekOfCode": "DB_FILE = \"trader_graduation.db\"\ndef init_db():\n    conn = sqlite3.connect(DB_FILE)\n    cursor = conn.cursor()\n    cursor.execute('''\n        CREATE TABLE IF NOT EXISTS daily_scores (\n            date TEXT PRIMARY KEY,\n            risk_discipline REAL,\n            edge_consistency REAL,\n            execution_discipline REAL,",
+        "detail": "database.models",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_scores",
+        "kind": 2,
+        "importPath": "evaluator.evaluator",
+        "description": "evaluator.evaluator",
+        "peekOfCode": "def calculate_scores(metrics, targets):\n    scores = {}\n    # RISK DISCIPLINE\n    dd_score = 100 if metrics['max_drawdown'] <= targets['max_drawdown'] else 100 * (targets['max_drawdown'] / metrics['max_drawdown'])\n    risk_score = 100 if metrics['risk_per_trade'] <= targets['risk_per_trade'] else 100 * (targets['risk_per_trade'] / metrics['risk_per_trade'])\n    sl_score = metrics['sl_compliance']\n    scores['risk_discipline'] = round((dd_score + risk_score + sl_score) / 3, 1)\n    # EDGE CONSISTENCY\n    pf_score = 100 if metrics['profit_factor'] >= targets['profit_factor'] else 100 * (metrics['profit_factor'] / targets['profit_factor'])\n    exp_score = 100 if metrics['expectancy'] > targets['expectancy'] else 0",
+        "detail": "evaluator.evaluator",
+        "documentation": {}
+    },
+    {
+        "label": "is_graduated",
+        "kind": 2,
+        "importPath": "evaluator.evaluator",
+        "description": "evaluator.evaluator",
+        "peekOfCode": "def is_graduated(scores):\n    return all(score >= 100 for score in scores.values())",
+        "detail": "evaluator.evaluator",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_scores",
         "kind": 2,
         "importPath": "evaluator.graduation",
         "description": "evaluator.graduation",
-        "peekOfCode": "def evaluate(metrics):\n    checks = {\n        \"max_drawdown\": metrics[\"max_dd\"] <= 20,\n        \"profit_factor\": metrics[\"pf\"] >= 1.3,\n        \"expectancy\": metrics[\"expectancy\"] > 0,\n        \"trade_count\": metrics[\"trades\"] >= 300\n    }\n    graduated = all(checks.values())\n    return graduated, checks",
+        "peekOfCode": "def calculate_scores(metrics, targets):\n    scores = {}\n    # Risk Discipline\n    dd_score = 100 if metrics['max_drawdown'] <= targets['max_drawdown'] else 100 * (targets['max_drawdown'] / metrics['max_drawdown'])\n    risk_score = 100 if metrics['risk_per_trade'] <= targets['risk_per_trade'] else 100 * (targets['risk_per_trade'] / metrics['risk_per_trade'])\n    sl_score = metrics['sl_compliance']\n    scores['risk_discipline'] = round((dd_score + risk_score + sl_score) / 3, 1)\n    # Edge Consistency\n    pf_score = 100 if metrics['profit_factor'] >= targets['profit_factor'] else 100 * (metrics['profit_factor'] / targets['profit_factor'])\n    exp_score = 100 if metrics['expectancy'] > targets['expectancy'] else 0",
         "detail": "evaluator.graduation",
         "documentation": {}
     },
     {
-        "label": "profit_factor",
+        "label": "is_graduated",
+        "kind": 2,
+        "importPath": "evaluator.graduation",
+        "description": "evaluator.graduation",
+        "peekOfCode": "def is_graduated(scores):\n    return all(score >= 100 for score in scores.values())",
+        "detail": "evaluator.graduation",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_behavior_metrics",
+        "kind": 2,
+        "importPath": "metrics.behavior",
+        "description": "metrics.behavior",
+        "peekOfCode": "def calculate_behavior_metrics(deals_df):\n    if deals_df.empty:\n        return {\n            'overtrading_score': 0,\n            'revenge_trades': 0,\n            'actual_max_trades_per_day': 0,\n            'losing_streak_recovery': 0,\n            'martingale_escalation': False,\n            'total_trades': 0,\n            'trading_days': 0",
+        "detail": "metrics.behavior",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_performance_metrics",
         "kind": 2,
         "importPath": "metrics.performance",
         "description": "metrics.performance",
-        "peekOfCode": "def profit_factor(trades):\n    wins = trades[trades['profit'] > 0]['profit'].sum()\n    losses = abs(trades[trades['profit'] < 0]['profit'].sum())\n    return wins / losses if losses != 0 else float('inf')\ndef expectancy(trades):\n    win_rate = len(trades[trades['profit'] > 0]) / len(trades)\n    avg_win = trades[trades['profit'] > 0]['profit'].mean()\n    avg_loss = abs(trades[trades['profit'] < 0]['profit'].mean())\n    return (win_rate * avg_win) - ((1 - win_rate) * avg_loss)",
+        "peekOfCode": "def calculate_performance_metrics(deals_df):\n    if deals_df.empty:\n        return {\n            'profit_factor': 0.0,\n            'expectancy': 0.0,\n            'avg_win_loss_ratio': 0.0,\n            'win_rate': 0.0,\n            'net_pnl': 0.0,\n            'gain_percent': 0.0\n        }",
         "detail": "metrics.performance",
         "documentation": {}
     },
     {
-        "label": "expectancy",
-        "kind": 2,
-        "importPath": "metrics.performance",
-        "description": "metrics.performance",
-        "peekOfCode": "def expectancy(trades):\n    win_rate = len(trades[trades['profit'] > 0]) / len(trades)\n    avg_win = trades[trades['profit'] > 0]['profit'].mean()\n    avg_loss = abs(trades[trades['profit'] < 0]['profit'].mean())\n    return (win_rate * avg_win) - ((1 - win_rate) * avg_loss)",
-        "detail": "metrics.performance",
-        "documentation": {}
-    },
-    {
-        "label": "max_drawdown",
+        "label": "calculate_risk_metrics",
         "kind": 2,
         "importPath": "metrics.risk",
         "description": "metrics.risk",
-        "peekOfCode": "def max_drawdown(equity_curve):\n    peak = equity_curve[0]\n    max_dd = 0\n    for value in equity_curve:\n        if value > peak:\n            peak = value\n        dd = (peak - value) / peak\n        max_dd = max(max_dd, dd)\n    return max_dd * 100",
+        "peekOfCode": "def calculate_risk_metrics(deals_df):\n    if deals_df.empty:\n        return {\n            'max_drawdown': 0.0,\n            'risk_per_trade': 0.0,\n            'sl_compliance': 100.0,\n            'equity_cliff': 0.0\n        }\n    equity = deals_df['pnl'].cumsum().fillna(0)\n    peak = equity.cummax()",
         "detail": "metrics.risk",
         "documentation": {}
     },
     {
-        "label": "fetch_trades",
+        "label": "fetch_trading_data",
         "kind": 2,
         "importPath": "mt5.fetcher",
         "description": "mt5.fetcher",
-        "peekOfCode": "def fetch_trades(from_date, to_date):\n    if mt5 is None:\n        print(\"MetaTrader5 not installed\")\n        return pd.DataFrame()\n    if not mt5.initialize():\n        print(\"MT5 init failed:\", mt5.last_error())\n        return pd.DataFrame()\n    deals = mt5.history_deals_get(\n        datetime.strptime(from_date, \"%Y-%m-%d\"),\n        datetime.strptime(to_date, \"%Y-%m-%d\")",
+        "peekOfCode": "def fetch_trading_data(login, password, server):\n    if not mt5.initialize():\n        print(\"MT5 initialize failed - using fallback\")\n        return pd.DataFrame()\n    if not mt5.login(login, password=password, server=server):\n        print(f\"MT5 login failed: {mt5.last_error()} - using fallback\")\n        mt5.shutdown()\n        return pd.DataFrame()\n    # Get deals from last 90 days\n    from_date = datetime.now() - timedelta(days=90)",
         "detail": "mt5.fetcher",
         "documentation": {}
     },
     {
-        "label": "dashboard",
+        "label": "get_trading_data",
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def dashboard():\n    metrics = {\n        \"skills\": {\n            \"Discipline\": 70,\n            \"Risk Management\": 85,\n            \"Patience\": 60\n        },\n        \"equity\": 1200,\n        \"drawdown\": 12\n    }",
+        "peekOfCode": "def get_trading_data():\n    # Safe mock with ALL needed keys\n    return {\n        'gain_percent': 2560.02,\n        'net_pnl': 179.87,\n        'trade_count': 216,\n        'win_rate': 33.3,\n        'profit_factor': 1.08,\n        'expectancy': 0.2,\n        'avg_win_loss_ratio': 1.8,",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "calculate_scores",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def calculate_scores(data, targets):\n    scores = {}\n    dd_score = 100 if data['max_drawdown'] <= targets['max_drawdown'] else 100 * (targets['max_drawdown'] / data['max_drawdown'])\n    risk_score = 100 if data['risk_per_trade'] <= targets['risk_per_trade'] else 100 * (targets['risk_per_trade'] / data['risk_per_trade'])\n    sl_score = data['sl_compliance']\n    scores['risk_discipline'] = round((dd_score + risk_score + sl_score) / 3, 1)\n    pf_score = 100 if data['profit_factor'] >= targets['profit_factor'] else 100 * (data['profit_factor'] / targets['profit_factor'])\n    exp_score = 100 if data['expectancy'] > targets['expectancy'] else 0\n    ratio_score = 100 if data['avg_win_loss_ratio'] >= targets['avg_win_loss_ratio'] else 100 * (data['avg_win_loss_ratio'] / targets['avg_win_loss_ratio'])\n    scores['edge_consistency'] = round((pf_score + exp_score + ratio_score) / 3, 1)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "is_graduated",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def is_graduated(scores):\n    return all(score >= 100 for score in scores.values())\n@app.route('/')\ndef dashboard():\n    data = get_trading_data()\n    scores = calculate_scores(data, targets)\n    graduated = is_graduated(scores)\n    current_time = datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n    equity_curve = [2000, 2100, 2050, 2200, 2300, 2236.87]\n    profit_curve = [0, 50, -20, 100, 150, 293.59]",
         "detail": "app",
         "documentation": {}
     },
@@ -91,7 +206,7 @@
         "kind": 2,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "def dashboard():\n    trades_raw = fetch_trades(\"2025-01-01\", \"2026-01-16\")\n    trades = prepare_trades(trades_raw)\n    if trades.empty:\n        return render_template(\n            \"dashboard.html\",\n            metrics={\"skills\": {}},\n            graduated=False,\n            message=\"No trade data available yet.\"\n        )",
+        "peekOfCode": "def dashboard():\n    data = get_trading_data()\n    scores = calculate_scores(data, targets)\n    graduated = is_graduated(scores)\n    current_time = datetime.datetime.now().strftime(\"%Y-%m-%d %H:%M:%S\")\n    equity_curve = [2000, 2100, 2050, 2200, 2300, 2236.87]\n    profit_curve = [0, 50, -20, 100, 150, 293.59]\n    return render_template('dashboard.html', data=data, scores=scores, targets=targets, graduated=graduated, current_time=current_time, equity_curve=equity_curve, profit_curve=profit_curve)\nif __name__ == '__main__':\n    app.run(debug=True)",
         "detail": "app",
         "documentation": {}
     },
@@ -100,8 +215,53 @@
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app = Flask(__name__)   # 👈 THIS LINE MUST EXIST BEFORE @app.route\n@app.route(\"/\")\ndef dashboard():\n    metrics = {\n        \"skills\": {\n            \"Discipline\": 70,\n            \"Risk Management\": 85,\n            \"Patience\": 60\n        },\n        \"equity\": 1200,",
+        "peekOfCode": "app = Flask(__name__)\ndef get_trading_data():\n    # Safe mock with ALL needed keys\n    return {\n        'gain_percent': 2560.02,\n        'net_pnl': 179.87,\n        'trade_count': 216,\n        'win_rate': 33.3,\n        'profit_factor': 1.08,\n        'expectancy': 0.2,",
         "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "targets",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "targets = {\n    'max_drawdown': 20,\n    'risk_per_trade': 1,\n    'sl_compliance': 100,\n    'profit_factor': 1.3,\n    'expectancy': 0,\n    'avg_win_loss_ratio': 1.5,\n    'overtrading_threshold': 10,\n    'revenge_trades': 0,\n    'max_trades_per_day': 5,",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "MT5_LOGIN",
+        "kind": 5,
+        "importPath": "config",
+        "description": "config",
+        "peekOfCode": "MT5_LOGIN = 12345678              # Your MT5 account number\nMT5_PASSWORD = 'your_password_here'\nMT5_SERVER = 'YourBroker-Demo'    # e.g. 'ICMarketsSC-Demo', 'FBS-Demo'\n# Graduation targets from your original goal\nTARGETS = {\n    'max_drawdown': 20,\n    'risk_per_trade': 1,\n    'sl_compliance': 100,\n    'profit_factor': 1.3,\n    'expectancy': 0,",
+        "detail": "config",
+        "documentation": {}
+    },
+    {
+        "label": "MT5_PASSWORD",
+        "kind": 5,
+        "importPath": "config",
+        "description": "config",
+        "peekOfCode": "MT5_PASSWORD = 'your_password_here'\nMT5_SERVER = 'YourBroker-Demo'    # e.g. 'ICMarketsSC-Demo', 'FBS-Demo'\n# Graduation targets from your original goal\nTARGETS = {\n    'max_drawdown': 20,\n    'risk_per_trade': 1,\n    'sl_compliance': 100,\n    'profit_factor': 1.3,\n    'expectancy': 0,\n    'avg_win_loss_ratio': 1.5,",
+        "detail": "config",
+        "documentation": {}
+    },
+    {
+        "label": "MT5_SERVER",
+        "kind": 5,
+        "importPath": "config",
+        "description": "config",
+        "peekOfCode": "MT5_SERVER = 'YourBroker-Demo'    # e.g. 'ICMarketsSC-Demo', 'FBS-Demo'\n# Graduation targets from your original goal\nTARGETS = {\n    'max_drawdown': 20,\n    'risk_per_trade': 1,\n    'sl_compliance': 100,\n    'profit_factor': 1.3,\n    'expectancy': 0,\n    'avg_win_loss_ratio': 1.5,\n    'overtrading_threshold': 10,",
+        "detail": "config",
+        "documentation": {}
+    },
+    {
+        "label": "TARGETS",
+        "kind": 5,
+        "importPath": "config",
+        "description": "config",
+        "peekOfCode": "TARGETS = {\n    'max_drawdown': 20,\n    'risk_per_trade': 1,\n    'sl_compliance': 100,\n    'profit_factor': 1.3,\n    'expectancy': 0,\n    'avg_win_loss_ratio': 1.5,\n    'overtrading_threshold': 10,\n    'revenge_trades': 0,\n    'max_trades_per_day': 5,",
+        "detail": "config",
         "documentation": {}
     }
 ]

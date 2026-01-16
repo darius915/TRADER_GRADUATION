@@ -1,81 +1,173 @@
 :root {
-    --bg: #0b0f14;
-    --card: #121821;
-    --accent: #4cc9f0;
-    --good: #4ade80;
-    --warn: #facc15;
-    --bad: #f87171;
-    --text: #e5e7eb;
+    --bg: #05070f;
+    --surface: #0f1624;
+    --border: #1e293b;
+    --text: #f8fafc;
+    --text-light: #94a3b8;
+    --positive: #10b981;
+    --negative: #f87171;
+    --accent: #7c3aed;
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Inter, system-ui, sans-serif;
+.theme-light {
+    --bg: #f8fafc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-light: #475569;
+    --positive: #059669;
+    --negative: #dc2626;
+    --accent: #5b21b6;
 }
 
 body {
+    margin: 0;
+    font-family: system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
+    transition: background 0.4s, color 0.4s;
 }
 
-.container {
-    max-width: 1100px;
-    margin: 40px auto;
-    padding: 20px;
+.sidebar {
+    width: 72px;
+    background: var(--surface);
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 1.5rem;
+    border-right: 1px solid var(--border);
 }
 
-header {
+.content {
+    margin-left: 72px;
+    padding: 2rem 3rem;
+}
+
+.top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 40px;
+    margin-bottom: 2.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border);
 }
 
-.status {
-    padding: 10px 18px;
-    border-radius: 999px;
-    font-weight: 600;
+.theme-control {
+    position: relative;
+    width: 54px;
+    height: 28px;
 }
 
-.status.pass {
-    background: var(--good);
-    color: #022c22;
+#darkModeToggle {
+    opacity: 0;
+    width: 0;
+    height: 0;
 }
 
-.status.fail {
-    background: var(--bad);
-    color: #450a0a;
+.toggle-switch {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: #334155;
+    border-radius: 34px;
+    transition: .4s;
 }
 
-.skills {
+.toggle-switch:before {
+    position: absolute;
+    content: "";
+    height: 24px;
+    width: 24px;
+    left: 2px;
+    bottom: 2px;
+    background: white;
+    border-radius: 50%;
+    transition: .4s;
+}
+
+#darkModeToggle:checked + .toggle-switch {
+    background: var(--accent);
+}
+
+#darkModeToggle:checked + .toggle-switch:before {
+    transform: translateX(26px);
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 4rem;
+}
+
+.stat-card {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 2rem 1.5rem;
+    text-align: center;
+    border: 1px solid var(--border);
+}
+
+.stat-value {
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1;
+}
+
+.positive { color: var(--positive); }
+.negative { color: var(--negative); }
+
+.stat-label {
+    margin-top: 0.75rem;
+    color: var(--text-light);
+    font-size: 1rem;
+}
+
+/* Charts, graduation, detailed metrics – same as before */
+.charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 4rem;
+}
+
+.chart-card {
+    height: 380px;
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+}
+
+.graduation-section h2, .detailed-metrics h2 {
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.skills-grid, .metrics-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    gap: 20px;
+    gap: 2rem;
 }
 
-.skill-card {
-    background: var(--card);
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 10px 30px rgba(0,0,0,.4);
+.skill-card, .metric-item {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 1.75rem;
+    text-align: center;
+    border: 1px solid var(--border);
 }
 
-.skill-header {
+.progress-circle {
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 12px;
-}
-
-.progress {
-    height: 10px;
-    background: #1f2937;
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--good));
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 700;
 }

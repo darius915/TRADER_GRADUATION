@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Graduation Summary</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <h1>Graduation Status</h1>
+    {% if graduated %}
+    <h2 class="success">You have GRADUATED! Congratulations!</h2>
+    {% else %}
+    <h2 class="warning">Still in evaluation phase</h2>
+    <p>Keep trading disciplined – you're getting closer.</p>
+    {% endif %}
+    <a href="/">Back to Dashboard</a>
+</body>
+</html>

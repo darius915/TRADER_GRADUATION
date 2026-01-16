@@ -2,37 +2,189 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trader Graduation Dashboard</title>
-    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="theme-dark">
 
-<div class="container">
+<!-- Sidebar -->
+<aside class="sidebar">
+    <div class="logo">TG</div>
+    <nav>
+        <a href="#" class="active" title="Dashboard">📊</a>
+    </nav>
+</aside>
 
-    <header>
-        <h1>Trader Skill Evaluation</h1>
-        <span class="status {{ 'pass' if graduated else 'fail' }}">
-            {{ 'LIVE READY' if graduated else 'IN TRAINING' }}
-        </span>
+<main class="content">
+    <header class="top-bar">
+        <div class="welcome">Welcome back, Darius</div>
+        <div class="status">Last Sync: 53 min ago • DEMO • {{ current_time }}</div>
+
+        <!-- Reliable toggle -->
+        <div class="theme-control">
+            <input type="checkbox" id="darkModeToggle" checked>
+            <label for="darkModeToggle" class="toggle-switch"></label>
+        </div>
     </header>
 
-    <section class="skills">
+    <!-- Graduation notice -->
+    <div class="graduation-notice">
+        {% if graduated %}
+        <div class="graduated">✓ Ready for Live Account</div>
+        {% else %}
+        <div class="in-progress">Evaluation in Progress</div>
+        {% endif %}
+    </div>
 
-        {% for skill, value in metrics['skills'].items() %}
-        <div class="skill-card">
-            <div class="skill-header">
-                <span>{{ skill }}</span>
-                <span>{{ value }}%</span>
+    <!-- Key Statistics – moved to top -->
+    <section class="hero-stats">
+        <h2>Key Statistics</h2>
+        <div class="metrics-grid">
+            <div class="metric-item">
+                <div class="metric-label">Gain %</div>
+                <div class="metric-value {% if data.gain_percent >= 0 %}positive{% else %}negative{% endif %}">{{ data.gain_percent }}%</div>
             </div>
-            <div class="progress">
-                <div class="bar" style="width: {{ value }}%"></div>
+            <div class="metric-item">
+                <div class="metric-label">Net P&L</div>
+                <div class="metric-value {% if data.net_pnl >= 0 %}positive{% else %}negative{% endif %}">${{ data.net_pnl }}</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-label">Max Drawdown</div>
+                <div class="metric-value {% if data.max_drawdown <= targets.max_drawdown %}positive{% else %}negative{% endif %}">{{ data.max_drawdown }}%</div>
+            </div>
+            <div class="metric-item">
+                <div class="metric-label">Win Rate</div>
+                <div class="metric-value positive">{{ data.win_rate }}%</div>
             </div>
         </div>
-        {% endfor %}
-
     </section>
 
-</div>
+    <!-- Charts -->
+    <section class="charts">
+        <div class="chart-card">
+            <h3>Equity Curve</h3>
+            <canvas id="equityChart"></canvas>
+        </div>
+        <div class="chart-card">
+            <h3>Profit Curve</h3>
+            <canvas id="profitChart"></canvas>
+        </div>
+    </section>
 
+    <!-- Detailed Metrics -->
+    <section class="detailed-metrics">
+        <h2>Detailed Metrics</h2>
+        <div class="metrics-grid">
+            <div class="metric-group">
+                <h4>Risk & Balance</h4>
+                <ul>
+                    <li>Max Drawdown: {{ data.max_drawdown }}%</li>
+                    <li>Current Equity: ${{ data.current_equity }}</li>
+                    <li>Current Balance: ${{ data.current_balance }}</li>
+                    <li>Highest Balance: ${{ data.highest_balance }}</li>
+                </ul>
+            </div>
+            <div class="metric-group">
+                <h4>Capital Flows</h4>
+                <ul>
+                    <li>Deposits / Withdrawals: ${{ data.deposits }} / ${{ data.withdrawals }}</li>
+                    <li>Commissions & Swap: ${{ data.commissions }} / ${{ data.swaps }}</li>
+                </ul>
+            </div>
+            <div class="metric-group">
+                <h4>Trade Stats</h4>
+                <ul>
+                    <li>Profit Factor: {{ data.profit_factor }}</li>
+                    <li>Avg Win / Avg Loss: ${{ data.avg_win }} / ${{ data.avg_loss }}</li>
+                    <li>Avg Duration: {{ data.avg_trade_duration }}</li>
+                </ul>
+            </div>
+            <div class="metric-group">
+                <h4>Period Returns</h4>
+                <ul>
+                    <li>Daily: {{ data.period_returns_daily }}%</li>
+                    <li>Weekly: {{ data.period_returns_weekly }}%</li>
+                    <li>Monthly: {{ data.period_returns_monthly }}%</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Graduation Skills – the part you liked most -->
+    <section class="graduation-section">
+        <h2>Graduation Skills Progress</h2>
+        <div class="skills-grid">
+            {% for key, value in scores.items() %}
+            <div class="skill-card">
+                <h3>{{ key.replace('_', ' ') | title }}</h3>
+                <div class="progress-circle" data-progress="{{ value }}">
+                    <span>{{ value }}%</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</main>
+
+<script>
+// Theme toggle – this version almost never fails
+document.addEventListener('DOMContentLoaded', () => {
+    const toggle = document.getElementById('darkModeToggle');
+
+    // Load saved preference
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        document.documentElement.classList.add('theme-light');
+        toggle.checked = false;
+    }
+
+    // Toggle handler
+    toggle.addEventListener('change', () => {
+        if (toggle.checked) {
+            document.documentElement.classList.remove('theme-light');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            document.documentElement.classList.add('theme-light');
+            localStorage.setItem('theme', 'light');
+        }
+        console.log("Theme toggled to:", document.documentElement.classList.contains('theme-light') ? 'light' : 'dark');
+    });
+});
+
+// Charts (unchanged)
+new Chart(document.getElementById('equityChart'), {
+    type: 'line',
+    data: {
+        labels: ['Jan 1','Jan 2','Jan 3','Jan 4','Jan 5','Jan 6'],
+        datasets: [{
+            data: {{ equity_curve }},
+            borderColor: '#10b981',
+            tension: 0.3
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+new Chart(document.getElementById('profitChart'), {
+    type: 'line',
+    data: {
+        labels: ['Jan 1','Jan 2','Jan 3','Jan 4','Jan 5','Jan 6'],
+        datasets: [{
+            data: {{ profit_curve }},
+            borderColor: '#3b82f6',
+            tension: 0.3
+        }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } } }
+});
+
+// Progress circles
+document.querySelectorAll('.progress-circle').forEach(circle => {
+    const progress = parseFloat(circle.dataset.progress) || 0;
+    circle.style.background = `conic-gradient(#10b981 ${progress * 3.6}deg, #1e293b 0deg)`;
+});
+</script>
 </body>
 </html>
