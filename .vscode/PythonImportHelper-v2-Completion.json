@@ -1,0 +1,107 @@
+[
+    {
+        "label": "pandas",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "pandas",
+        "description": "pandas",
+        "detail": "pandas",
+        "documentation": {}
+    },
+    {
+        "label": "datetime",
+        "importPath": "datetime",
+        "description": "datetime",
+        "isExtraImport": true,
+        "detail": "datetime",
+        "documentation": {}
+    },
+    {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "evaluate",
+        "kind": 2,
+        "importPath": "evaluator.graduation",
+        "description": "evaluator.graduation",
+        "peekOfCode": "def evaluate(metrics):\n    checks = {\n        \"max_drawdown\": metrics[\"max_dd\"] <= 20,\n        \"profit_factor\": metrics[\"pf\"] >= 1.3,\n        \"expectancy\": metrics[\"expectancy\"] > 0,\n        \"trade_count\": metrics[\"trades\"] >= 300\n    }\n    graduated = all(checks.values())\n    return graduated, checks",
+        "detail": "evaluator.graduation",
+        "documentation": {}
+    },
+    {
+        "label": "profit_factor",
+        "kind": 2,
+        "importPath": "metrics.performance",
+        "description": "metrics.performance",
+        "peekOfCode": "def profit_factor(trades):\n    wins = trades[trades['profit'] > 0]['profit'].sum()\n    losses = abs(trades[trades['profit'] < 0]['profit'].sum())\n    return wins / losses if losses != 0 else float('inf')\ndef expectancy(trades):\n    win_rate = len(trades[trades['profit'] > 0]) / len(trades)\n    avg_win = trades[trades['profit'] > 0]['profit'].mean()\n    avg_loss = abs(trades[trades['profit'] < 0]['profit'].mean())\n    return (win_rate * avg_win) - ((1 - win_rate) * avg_loss)",
+        "detail": "metrics.performance",
+        "documentation": {}
+    },
+    {
+        "label": "expectancy",
+        "kind": 2,
+        "importPath": "metrics.performance",
+        "description": "metrics.performance",
+        "peekOfCode": "def expectancy(trades):\n    win_rate = len(trades[trades['profit'] > 0]) / len(trades)\n    avg_win = trades[trades['profit'] > 0]['profit'].mean()\n    avg_loss = abs(trades[trades['profit'] < 0]['profit'].mean())\n    return (win_rate * avg_win) - ((1 - win_rate) * avg_loss)",
+        "detail": "metrics.performance",
+        "documentation": {}
+    },
+    {
+        "label": "max_drawdown",
+        "kind": 2,
+        "importPath": "metrics.risk",
+        "description": "metrics.risk",
+        "peekOfCode": "def max_drawdown(equity_curve):\n    peak = equity_curve[0]\n    max_dd = 0\n    for value in equity_curve:\n        if value > peak:\n            peak = value\n        dd = (peak - value) / peak\n        max_dd = max(max_dd, dd)\n    return max_dd * 100",
+        "detail": "metrics.risk",
+        "documentation": {}
+    },
+    {
+        "label": "fetch_trades",
+        "kind": 2,
+        "importPath": "mt5.fetcher",
+        "description": "mt5.fetcher",
+        "peekOfCode": "def fetch_trades(from_date, to_date):\n    if mt5 is None:\n        print(\"MetaTrader5 not installed\")\n        return pd.DataFrame()\n    if not mt5.initialize():\n        print(\"MT5 init failed:\", mt5.last_error())\n        return pd.DataFrame()\n    deals = mt5.history_deals_get(\n        datetime.strptime(from_date, \"%Y-%m-%d\"),\n        datetime.strptime(to_date, \"%Y-%m-%d\")",
+        "detail": "mt5.fetcher",
+        "documentation": {}
+    },
+    {
+        "label": "dashboard",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def dashboard():\n    metrics = {\n        \"skills\": {\n            \"Discipline\": 70,\n            \"Risk Management\": 85,\n            \"Patience\": 60\n        },\n        \"equity\": 1200,\n        \"drawdown\": 12\n    }",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "dashboard",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def dashboard():\n    trades_raw = fetch_trades(\"2025-01-01\", \"2026-01-16\")\n    trades = prepare_trades(trades_raw)\n    if trades.empty:\n        return render_template(\n            \"dashboard.html\",\n            metrics={\"skills\": {}},\n            graduated=False,\n            message=\"No trade data available yet.\"\n        )",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__)   # 👈 THIS LINE MUST EXIST BEFORE @app.route\n@app.route(\"/\")\ndef dashboard():\n    metrics = {\n        \"skills\": {\n            \"Discipline\": 70,\n            \"Risk Management\": 85,\n            \"Patience\": 60\n        },\n        \"equity\": 1200,",
+        "detail": "app",
+        "documentation": {}
+    }
+]

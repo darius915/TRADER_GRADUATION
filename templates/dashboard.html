@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trader Graduation Dashboard</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <header>
+        <h1>Trader Skill Evaluation</h1>
+        <span class="status {{ 'pass' if graduated else 'fail' }}">
+            {{ 'LIVE READY' if graduated else 'IN TRAINING' }}
+        </span>
+    </header>
+
+    <section class="skills">
+
+        {% for skill, value in metrics['skills'].items() %}
+        <div class="skill-card">
+            <div class="skill-header">
+                <span>{{ skill }}</span>
+                <span>{{ value }}%</span>
+            </div>
+            <div class="progress">
+                <div class="bar" style="width: {{ value }}%"></div>
+            </div>
+        </div>
+        {% endfor %}
+
+    </section>
+
+</div>
+
+</body>
+</html>
